@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 function App() {
   const [formData, setFormData] = useState({
@@ -8,7 +8,7 @@ function App() {
       birthTime: '',
       occupation: '',
       hobbies: '',
-      goals: ''
+      goals: '',
     },
     person2: {
       age: '',
@@ -16,52 +16,66 @@ function App() {
       birthTime: '',
       occupation: '',
       hobbies: '',
-      goals: ''
-    }
+      goals: '',
+    },
   });
 
-  const handleChange = (person, field, value) => {
-    setFormData({
-      ...formData,
+  const handleChange = (e, person) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
       [person]: {
-        ...formData[person],
-        [field]: value
-      }
-    });
+        ...prevState[person],
+        [name]: value,
+      },
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Datos enviados:', formData);
-    alert('Análisis en proceso...');
-    // Aquí iría la lógica para analizar compatibilidad
+
+    const p1 = formData.person1;
+    const p2 = formData.person2;
+
+    const edadCompatible = Math.abs(p1.age - p2.age) <= 10;
+    const hobbies1 = p1.hobbies.toLowerCase().split(',').map(h => h.trim());
+    const hobbies2 = p2.hobbies.toLowerCase().split(',').map(h => h.trim());
+    const hobbiesComunes = hobbies1.filter(h => hobbies2.includes(h));
+
+    const metas1 = p1.goals.toLowerCase();
+    const metas2 = p2.goals.toLowerCase();
+    const metasCompatibles = metas1 && metas2 && (metas1.includes(metas2) || metas2.includes(metas1));
+
+    let resultado = '🔍 Resultado del análisis de compatibilidad:\n\n';
+    resultado += `📊 Diferencia de edad: ${Math.abs(p1.age - p2.age)} años → ${edadCompatible ? '✅ Compatible' : '❌ Muy diferente'}\n\n`;
+    resultado += `🎯 Hobbies en común: ${hobbiesComunes.length > 0 ? hobbiesComunes.join(', ') : 'Ninguno'} → ${hobbiesComunes.length > 0 ? '✅ Compatible' : '❌ Poca afinidad'}\n\n`;
+    resultado += `🚀 Metas similares: ${metasCompatibles ? '✅ Sí' : '❌ No'}`;
+
+    alert(resultado);
   };
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <h1>Analizador de Compatibilidad</h1>
+      <h1>💘 Analizador de Compatibilidad de Parejas</h1>
       <form onSubmit={handleSubmit}>
-        <div>
-          <h2>Persona 1</h2>
-          <input placeholder="Edad" type="number" value={formData.person1.age} onChange={(e) => handleChange('person1', 'age', e.target.value)} />
-          <input placeholder="Fecha de nacimiento" type="date" value={formData.person1.birthDate} onChange={(e) => handleChange('person1', 'birthDate', e.target.value)} />
-          <input placeholder="Hora de nacimiento" type="time" value={formData.person1.birthTime} onChange={(e) => handleChange('person1', 'birthTime', e.target.value)} />
-          <input placeholder="Ocupación" type="text" value={formData.person1.occupation} onChange={(e) => handleChange('person1', 'occupation', e.target.value)} />
-          <input placeholder="Hobbies" type="text" value={formData.person1.hobbies} onChange={(e) => handleChange('person1', 'hobbies', e.target.value)} />
-          <input placeholder="Metas" type="text" value={formData.person1.goals} onChange={(e) => handleChange('person1', 'goals', e.target.value)} />
-        </div>
+        <h2>👤 Persona 1</h2>
+        <input type="number" name="age" placeholder="Edad" onChange={(e) => handleChange(e, 'person1')} required />
+        <input type="date" name="birthDate" placeholder="Fecha de nacimiento" onChange={(e) => handleChange(e, 'person1')} required />
+        <input type="time" name="birthTime" placeholder="Hora de nacimiento" onChange={(e) => handleChange(e, 'person1')} required />
+        <input type="text" name="occupation" placeholder="Ocupación" onChange={(e) => handleChange(e, 'person1')} required />
+        <input type="text" name="hobbies" placeholder="Hobbies (separados por coma)" onChange={(e) => handleChange(e, 'person1')} required />
+        <input type="text" name="goals" placeholder="Metas" onChange={(e) => handleChange(e, 'person1')} required />
 
-        <div style={{ marginTop: '2rem' }}>
-          <h2>Persona 2</h2>
-          <input placeholder="Edad" type="number" value={formData.person2.age} onChange={(e) => handleChange('person2', 'age', e.target.value)} />
-          <input placeholder="Fecha de nacimiento" type="date" value={formData.person2.birthDate} onChange={(e) => handleChange('person2', 'birthDate', e.target.value)} />
-          <input placeholder="Hora de nacimiento" type="time" value={formData.person2.birthTime} onChange={(e) => handleChange('person2', 'birthTime', e.target.value)} />
-          <input placeholder="Ocupación" type="text" value={formData.person2.occupation} onChange={(e) => handleChange('person2', 'occupation', e.target.value)} />
-          <input placeholder="Hobbies" type="text" value={formData.person2.hobbies} onChange={(e) => handleChange('person2', 'hobbies', e.target.value)} />
-          <input placeholder="Metas" type="text" value={formData.person2.goals} onChange={(e) => handleChange('person2', 'goals', e.target.value)} />
-        </div>
+        <h2>👤 Persona 2</h2>
+        <input type="number" name="age" placeholder="Edad" onChange={(e) => handleChange(e, 'person2')} required />
+        <input type="date" name="birthDate" placeholder="Fecha de nacimiento" onChange={(e) => handleChange(e, 'person2')} required />
+        <input type="time" name="birthTime" placeholder="Hora de nacimiento" onChange={(e) => handleChange(e, 'person2')} required />
+        <input type="text" name="occupation" placeholder="Ocupación" onChange={(e) => handleChange(e, 'person2')} required />
+        <input type="text" name="hobbies" placeholder="Hobbies (separados por coma)" onChange={(e) => handleChange(e, 'person2')} required />
+        <input type="text" name="goals" placeholder="Metas" onChange={(e) => handleChange(e, 'person2')} required />
 
-        <button style={{ marginTop: '2rem' }} type="submit">Analizar Compatibilidad</button>
+        <br /><br />
+        <button type="submit">Analizar Compatibilidad</button>
       </form>
     </div>
   );
