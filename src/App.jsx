@@ -1,129 +1,170 @@
-import React, { useState } from 'react';
-import './App.css';
-
-const zodiacSigns = [
-  { sign: 'Aries', start: '03-21', end: '04-19' },
-  { sign: 'Taurus', start: '04-20', end: '05-20' },
-  { sign: 'Gemini', start: '05-21', end: '06-20' },
-  { sign: 'Cancer', start: '06-21', end: '07-22' },
-  { sign: 'Leo', start: '07-23', end: '08-22' },
-  { sign: 'Virgo', start: '08-23', end: '09-22' },
-  { sign: 'Libra', start: '09-23', end: '10-22' },
-  { sign: 'Scorpio', start: '10-23', end: '11-21' },
-  { sign: 'Sagittarius', start: '11-22', end: '12-21' },
-  { sign: 'Capricorn', start: '12-22', end: '01-19' },
-  { sign: 'Aquarius', start: '01-20', end: '02-18' },
-  { sign: 'Pisces', start: '02-19', end: '03-20' }
-];
-
-function getZodiacSign(date) {
-  const d = new Date(date);
-  const month = (d.getMonth() + 1).toString().padStart(2, '0');
-  const day = d.getDate().toString().padStart(2, '0');
-  const formattedDate = `${month}-${day}`;
-
-  for (const z of zodiacSigns) {
-    if (
-      (z.start <= formattedDate && formattedDate <= z.end) ||
-      (z.start > z.end && (formattedDate >= z.start || formattedDate <= z.end))
-    ) {
-      return z.sign;
-    }
-  }
-  return '';
-}
+// src/App.jsx
+import React, { useState } from "react";
+import "./App.css";
 
 function App() {
   const [formData, setFormData] = useState({
-    person1: { birthdate: '', birthtime: '', goals: '', communication: 'Buena' },
-    person2: { birthdate: '', birthtime: '', goals: '', communication: 'Buena' }
+    persona1: {
+      nombre: "",
+      genero: "",
+      fechaNacimiento: "",
+      horaNacimiento: "",
+      metas: "",
+      comunicacion: "Buena",
+    },
+    persona2: {
+      nombre: "",
+      genero: "",
+      fechaNacimiento: "",
+      horaNacimiento: "",
+      metas: "",
+      comunicacion: "Buena",
+    },
   });
-  const [result, setResult] = useState(null);
 
-  const handleChange = (e, person) => {
+  const [resultado, setResultado] = useState("");
+
+  const handleChange = (e, persona) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [person]: {
-        ...prev[person],
-        [name]: value
-      }
+      [persona]: {
+        ...prev[persona],
+        [name]: value,
+      },
     }));
   };
 
-  const calculateCompatibility = () => {
-    const { person1, person2 } = formData;
+  const calcularCompatibilidad = () => {
+    const p1 = formData.persona1;
+    const p2 = formData.persona2;
 
-    const sign1 = getZodiacSign(person1.birthdate);
-    const sign2 = getZodiacSign(person2.birthdate);
+    let puntaje = 0;
 
-    const scoreMap = {
-      'Muy buena': 25,
-      'Buena': 20,
-      'Poca': 10,
-      'Nula': 0
+    // Comunicación
+    const puntosComunicacion = {
+      "Nula": 0,
+      "Poca": 1,
+      "Buena": 2,
+      "Muy buena": 3,
+    };
+    puntaje += puntosComunicacion[p1.comunicacion];
+    puntaje += puntosComunicacion[p2.comunicacion];
+
+    // Metas similares
+    if (p1.metas.trim().toLowerCase() === p2.metas.trim().toLowerCase()) {
+      puntaje += 2;
+    }
+
+    // Signos zodiacales (básico)
+    const signosCompatibles = [
+      ["Aries", "Leo", "Sagitario"],
+      ["Tauro", "Virgo", "Capricornio"],
+      ["Géminis", "Libra", "Acuario"],
+      ["Cáncer", "Escorpio", "Piscis"],
+    ];
+
+    const obtenerSigno = (fecha) => {
+      const [anio, mes, dia] = fecha.split("-").map(Number);
+      if ((mes === 3 && dia >= 21) || (mes === 4 && dia <= 19)) return "Aries";
+      if ((mes === 4 && dia >= 20) || (mes === 5 && dia <= 20)) return "Tauro";
+      if ((mes === 5 && dia >= 21) || (mes === 6 && dia <= 20)) return "Géminis";
+      if ((mes === 6 && dia >= 21) || (mes === 7 && dia <= 22)) return "Cáncer";
+      if ((mes === 7 && dia >= 23) || (mes === 8 && dia <= 22)) return "Leo";
+      if ((mes === 8 && dia >= 23) || (mes === 9 && dia <= 22)) return "Virgo";
+      if ((mes === 9 && dia >= 23) || (mes === 10 && dia <= 22)) return "Libra";
+      if ((mes === 10 && dia >= 23) || (mes === 11 && dia <= 21)) return "Escorpio";
+      if ((mes === 11 && dia >= 22) || (mes === 12 && dia <= 21)) return "Sagitario";
+      if ((mes === 12 && dia >= 22) || (mes === 1 && dia <= 19)) return "Capricornio";
+      if ((mes === 1 && dia >= 20) || (mes === 2 && dia <= 18)) return "Acuario";
+      if ((mes === 2 && dia >= 19) || (mes === 3 && dia <= 20)) return "Piscis";
+      return "Desconocido";
     };
 
-    let score = 50;
+    const signo1 = obtenerSigno(p1.fechaNacimiento);
+    const signo2 = obtenerSigno(p2.fechaNacimiento);
 
-    if (sign1 === sign2) score += 10;
-    else score += 5;
+    const signosCompatiblesEntreSi = signosCompatibles.find(
+      (grupo) => grupo.includes(signo1) && grupo.includes(signo2)
+    );
+    if (signosCompatiblesEntreSi) {
+      puntaje += 3;
+    }
 
-    if (person1.goals === person2.goals) score += 15;
-    else score += 5;
+    // Compatibilidad de género puede ajustarse a tu lógica
 
-    score += scoreMap[person1.communication] || 0;
-    score += scoreMap[person2.communication] || 0;
+    const porcentaje = Math.min(Math.round((puntaje / 10) * 100), 100);
+    let mensaje = `La compatibilidad entre ${p1.nombre} y ${p2.nombre} es del ${porcentaje}%.`;
 
-    const percentage = Math.min(100, Math.round(score));
-    let message = '';
+    if (porcentaje >= 80) {
+      mensaje += " ¡Tienen una conexión muy fuerte!";
+    } else if (porcentaje >= 60) {
+      mensaje += " Hay buena base para una relación.";
+    } else {
+      mensaje += " Podrían necesitar trabajar más en su relación.";
+    }
 
-    if (percentage > 85) message = '¡Pareja muy compatible!';
-    else if (percentage > 60) message = 'Tienen buena compatibilidad con margen para mejorar.';
-    else if (percentage > 40) message = 'Compatibilidad media. Trabajen en sus diferencias.';
-    else message = 'Poca compatibilidad. Requiere mucho trabajo en la relación.';
-
-    setResult({ sign1, sign2, percentage, message });
+    setResultado(mensaje);
   };
 
   return (
-    <div className="form-container">
-      <h1>Breakup Predictor</h1>
+    <div className="App">
+      <h1>Analizador de Compatibilidad de Pareja 💖</h1>
 
-      {["person1", "person2"].map((person, index) => (
-        <div key={person}>
-          <h2>Persona {index + 1}</h2>
-
-          <label>Fecha de nacimiento:</label>
-          <input type="date" name="birthdate" value={formData[person].birthdate} onChange={(e) => handleChange(e, person)} />
-
-          <label>Hora de nacimiento:</label>
-          <input type="time" name="birthtime" value={formData[person].birthtime} onChange={(e) => handleChange(e, person)} />
-
-          <label>Metas:</label>
-          <input type="text" name="goals" value={formData[person].goals} onChange={(e) => handleChange(e, person)} />
-
-          <label>Comunicación:</label>
-          <select name="communication" value={formData[person].communication} onChange={(e) => handleChange(e, person)}>
-            <option value="Muy buena">Muy buena</option>
-            <option value="Buena">Buena</option>
+      {[1, 2].map((num) => (
+        <div key={num} className="persona">
+          <h2>Persona {num}</h2>
+          <input
+            type="text"
+            name="nombre"
+            placeholder="Nombre"
+            value={formData[`persona${num}`].nombre}
+            onChange={(e) => handleChange(e, `persona${num}`)}
+          />
+          <select
+            name="genero"
+            value={formData[`persona${num}`].genero}
+            onChange={(e) => handleChange(e, `persona${num}`)}
+          >
+            <option value="">Seleccionar género</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Femenino">Femenino</option>
+          </select>
+          <input
+            type="date"
+            name="fechaNacimiento"
+            value={formData[`persona${num}`].fechaNacimiento}
+            onChange={(e) => handleChange(e, `persona${num}`)}
+          />
+          <input
+            type="time"
+            name="horaNacimiento"
+            value={formData[`persona${num}`].horaNacimiento}
+            onChange={(e) => handleChange(e, `persona${num}`)}
+          />
+          <input
+            type="text"
+            name="metas"
+            placeholder="Metas"
+            value={formData[`persona${num}`].metas}
+            onChange={(e) => handleChange(e, `persona${num}`)}
+          />
+          <select
+            name="comunicacion"
+            value={formData[`persona${num}`].comunicacion}
+            onChange={(e) => handleChange(e, `persona${num}`)}
+          >
+            <option value="Nula">Comunicación: Nula</option>
             <option value="Poca">Poca</option>
-            <option value="Nula">Nula</option>
+            <option value="Buena">Buena</option>
+            <option value="Muy buena">Muy buena</option>
           </select>
         </div>
       ))}
 
-      <button onClick={calculateCompatibility}>Analizar compatibilidad</button>
+      <button onClick={calcularCompatibilidad}>Analizar Compatibilidad</button>
 
-      {result && (
-        <div className="result">
-          <h2>Resultados</h2>
-          <p>Signo de la persona 1: {result.sign1}</p>
-          <p>Signo de la persona 2: {result.sign2}</p>
-          <p>Porcentaje de compatibilidad: <strong>{result.percentage}%</strong></p>
-          <p><em>{result.message}</em></p>
-        </div>
-      )}
+      {resultado && <div className="resultado">{resultado}</div>}
     </div>
   );
 }
