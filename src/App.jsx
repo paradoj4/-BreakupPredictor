@@ -77,11 +77,17 @@ function App() {
     const compatibles = compatibility[signo1] || [];
 
     const esCompatible = compatibles.includes(signo2);
-    const mensaje = esCompatible
-      ? `Buena compatibilidad entre ${signo1} y ${signo2}.`
-      : `Compatibilidad baja entre ${signo1} y ${signo2}, pero todo se puede trabajar si hay amor.`;
+    const porcentaje = esCompatible
+      ? Math.floor(Math.random() * 21 + 80) // 80-100%
+      : Math.floor(Math.random() * 41 + 40); // 40-80%
 
-    setResultado(`Signos: ${signo1} y ${signo2}. ${mensaje}`);
+    const mensaje = esCompatible
+      ? `¡Buena compatibilidad! ${signo1} y ${signo2} suelen llevarse bien.`
+      : `Compatibilidad moderada. ${signo1} y ${signo2} pueden necesitar más comunicación.`;
+
+    setResultado(
+      `Signos: ${signo1} y ${signo2}. ${mensaje} Compatibilidad: ${porcentaje}%`
+    );
   };
 
   return (
@@ -109,10 +115,14 @@ function App() {
         <input name="hobbies2" placeholder="Hobbies" onChange={handleChange} />
         <input name="metas2" placeholder="Metas" onChange={handleChange} />
 
-        <button type="submit">Analizar</button>
+        <button type="submit" style={{ marginTop: "1rem" }}>
+          Analizar Compatibilidad
+        </button>
       </form>
 
-      {resultado && <p style={{ marginTop: "1rem" }}>{resultado}</p>}
+      {resultado && (
+        <div style={{ marginTop: "2rem", fontWeight: "bold" }}>{resultado}</div>
+      )}
     </div>
   );
 }
