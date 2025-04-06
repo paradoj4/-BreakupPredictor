@@ -78,8 +78,8 @@ function App() {
 
     const esCompatible = compatibles.includes(signo2);
     const porcentaje = esCompatible
-      ? Math.floor(Math.random() * 21 + 80) // 80-100%
-      : Math.floor(Math.random() * 41 + 40); // 40-80%
+      ? Math.floor(Math.random() * 21 + 80)
+      : Math.floor(Math.random() * 41 + 40);
 
     const mensaje = esCompatible
       ? `¡Buena compatibilidad! ${signo1} y ${signo2} suelen llevarse bien.`
@@ -91,12 +91,26 @@ function App() {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Analizador de Compatibilidad de Pareja</h1>
+    <div style={{
+      padding: "2rem",
+      background: "linear-gradient(135deg, #ffafbd, #ffc3a0)",
+      minHeight: "100vh",
+      fontFamily: "'Comic Sans MS', cursive, sans-serif",
+      color: "#4b2c4e"
+    }}>
+      <h1 style={{ textAlign: "center" }}>💖 Analizador de Compatibilidad de Pareja 💖</h1>
       <form
         onSubmit={(e) => {
           e.preventDefault();
           analizarCompatibilidad();
+        }}
+        style={{
+          maxWidth: "600px",
+          margin: "auto",
+          background: "rgba(255,255,255,0.85)",
+          padding: "2rem",
+          borderRadius: "20px",
+          boxShadow: "0 0 20px rgba(0,0,0,0.1)"
         }}
       >
         <h2>Persona 1</h2>
@@ -115,13 +129,32 @@ function App() {
         <input name="hobbies2" placeholder="Hobbies" onChange={handleChange} />
         <input name="metas2" placeholder="Metas" onChange={handleChange} />
 
-        <button type="submit" style={{ marginTop: "1rem" }}>
-          Analizar Compatibilidad
+        <button type="submit" style={{
+          marginTop: "1rem",
+          background: "#ff69b4",
+          color: "white",
+          padding: "0.5rem 1.5rem",
+          border: "none",
+          borderRadius: "10px",
+          cursor: "pointer"
+        }}>
+          💌 Analizar Compatibilidad
         </button>
       </form>
 
       {resultado && (
-        <div style={{ marginTop: "2rem", fontWeight: "bold" }}>{resultado}</div>
+        <div style={{
+          marginTop: "2rem",
+          maxWidth: "600px",
+          margin: "2rem auto",
+          background: "white",
+          padding: "1.5rem",
+          borderRadius: "15px",
+          textAlign: "center",
+          boxShadow: "0 0 15px rgba(0,0,0,0.1)"
+        }}>
+          <strong>{resultado}</strong>
+        </div>
       )}
     </div>
   );
